@@ -1,0 +1,129 @@
+install the express pug nodemon ejs express-session body-parser uuid
+
+Create a server.js file :
+Create a folder named as views and inside it a file named as base.ejs
+
+const express = require('express')
+const path    = require('path')
+const app     = express()
+
+const PORT    = process.env.PORT || 3000;
+
+app.set('view engine','ejs')
+
+//load static assets
+app.use('/static',express.static(path.join(__dirname,'public')))  // for css
+app.use('/assets',express.static(path.join(__dirname, 'public/assets')))  // for any kinda assets use i didn't use any asset in this project
+
+app.get('/',(req,res)=>{
+  res.render('base', {title : 'Login System'})
+})
+
+app.listen(PORT,()=>{
+  console.log(`The app is running on the ${PORT}`)
+})
+
+base.ejs :
+
+put ! this mark and press enter to open the file
+<title><%= title%></title>    // to get the value of the title when it called 
+
+Create separate files of header.ejs and footer.ejs in the folder of views then see how to add them in base.ejs
+
+<%- include('header') -%>
+<h2>Login System</h2>
+<%- include('footer') -%>
+
+Create a folder named as public and add a file named as style.css into it 
+To add the css we need to do :
+<link rel='stylesheet' href='/static/style.css'>
+
+Suppose in style.css i want to add some background image then i'll do in this way :
+background-image: url('/assets/background_png.png')
+
+Adding the login feature to the project :
+
+const bodyparser = require('body-parser')       // Add this into server.js
+const session    = require('express-session')
+const {v4 : uuidv4} = require('uuid')
+app.use(bodyparser.json())
+app.use(bodyparser.urlencoded({extended: true}))
+
+app.use(session({
+   secret : 'secret', or write here instead uuidv4();
+   resave : false,
+ saveUninitialized : true
+}))
+
+For the separate of concerns we would like to route the application on another file 
+let's create a file named as route.js
+
+const express = require('express')
+const router  = express.Router();
+
+const credential = {
+  email   = 'anything@gmail.com',
+ password = '123@321'
+
+router.post('/login',(req,res)=>{
+ if(req.body.email == credentials.email && req.body.password == credentials.password){
+  req.session.user == req.body.email;
+  res.redirect('/route/dashboard')
+ }else{
+  res.send('Invalid Username')
+ }
+})
+
+module.exports = router
+
+Most importantly in the form element add these attritubes 
+ action='/route/login' method='POST'
+
+
+Now in server.js file : 
+
+const router = require('./router')
+
+
+app.use('/route',router)
+
+app.get('/',(req,res)=>{
+ The code is written above 
+})
+
+Adding Logout Functionality :
+
+Firstly create a dashboard.ejs file in the views folder
+
+Then create it's route in the route.js
+router.get('/dashboard',(req,res)=>{
+  if(req.session.user){
+  res.render('dashboard', {user : req.session.user})
+}
+else{
+  res.send('Unauthorized User')
+}
+})
+
+NOw create a route for the logout also
+
+router.get('/logout', (req,res)=>{
+   req.session.destroy((err)=>{
+   if(err)
+   console.log(err)
+   else{
+   res.render('base',{title : 'Express', logout : 'logout Successfully'})
+   
+})
+})
+
+Go to the base.ejs  and write the following code there 
+<% if(locals.logout){%>
+  <span>
+   <%= logout%>
+  </span>
+<%}%>
+
+dashboard.js
+
+<a href="/route/logout">Logout</a>

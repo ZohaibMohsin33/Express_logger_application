@@ -1,0 +1,31 @@
+<%- include('./header') -%>
+<form method="POST" action="/route/login" >
+    <div class="container d-flex align-items-center justify-content-center flex-column flex-grow-1 mt-5">
+        <div class="row">
+            <div class="col text-center">
+                <h2>Login Form</h2>
+            </div>
+        </div>
+         <div class="row w-50 d-flex align-items-center flex-column">
+            <% if(locals.logout){%>
+                <div class="mb-3">
+                    <span> <%= locals.logout%> </span>
+                </div>
+
+                <%}%>
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com" name="email">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" name="password">
+            </div>
+            <div class="mb-3">
+                <input type="submit" class="form-control btn-success btn-l text-center w-100" value="Submit">
+            </div>
+            
+         </div>
+        </div>
+    </form>
+<%- include('./footer') -%>
